@@ -24,6 +24,8 @@ public class b_service extends Service {
     private MediaPlayer player;
     private TelephonyManager telMgr;
     private Handler mTimerHandler = new Handler();
+    private Timer mTimer1;
+    private TimerTask mTt1;
 
     @Nullable
     @Override
@@ -38,8 +40,7 @@ public class b_service extends Service {
                 0, notificationIntent, 0);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Example Service")
-                .setContentText("tejas")
+                .setContentTitle("App running successfully")
                 .setSmallIcon(R.drawable.ic_sim)
                 .setContentIntent(pendingIntent)
                 .build();
@@ -49,8 +50,8 @@ public class b_service extends Service {
         player = MediaPlayer.create(this, Settings.System.DEFAULT_RINGTONE_URI);
         player.setLooping(true);
         player.start();
-        Timer mTimer1 = new Timer();
-        TimerTask mTt1 = new TimerTask() {
+        mTimer1 = new Timer();
+        mTt1 = new TimerTask() {
             public void run() {
                 mTimerHandler.post(new Runnable() {
                     public void run(){
@@ -77,5 +78,7 @@ public class b_service extends Service {
     public void onDestroy() {
         super.onDestroy();
         player.stop();
+        mTimer1.cancel();
+        mTimer1.purge();
     }
 }
