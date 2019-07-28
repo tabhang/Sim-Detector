@@ -49,6 +49,7 @@ public class b_service extends Service {
 
         startForeground(1, notification);
 
+
         player = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
         r = RingtoneManager.getRingtone(getApplicationContext(), player);
         mTimer1 = new Timer();
