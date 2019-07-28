@@ -5,10 +5,11 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.support.annotation.Nullable;
@@ -21,7 +22,8 @@ import static com.example.simdetector.notif.CHANNEL_ID;
 
 public class b_service extends Service {
 
-    private MediaPlayer player;
+    private Uri player;
+    private Ringtone r;
     private TelephonyManager telMgr;
     private Handler mTimerHandler = new Handler();
     private Timer mTimer1;
@@ -47,9 +49,8 @@ public class b_service extends Service {
 
         startForeground(1, notification);
 
-        player = MediaPlayer.create(this, Settings.System.DEFAULT_RINGTONE_URI);
-        player.setLooping(true);
-        player.start();
+        player = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
+        r = RingtoneManager.getRingtone(getApplicationContext(), player);
         mTimer1 = new Timer();
         mTt1 = new TimerTask() {
             public void run() {
@@ -58,11 +59,11 @@ public class b_service extends Service {
                         telMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
                         if(telMgr.getSimState() == TelephonyManager.SIM_STATE_ABSENT){
-                            player.start();
+                            r.play();
                         }
                         else
                         {
-                            player.pause();
+                            r.stop();
                         }
                         }
                     });
@@ -71,13 +72,13 @@ public class b_service extends Service {
 
             mTimer1.schedule(mTt1, 1, 5000);
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        player.stop();
+        r.stop();
         mTimer1.cancel();
         mTimer1.purge();
     }
